@@ -161,6 +161,29 @@ Buka browser di: **[http://127.0.0.1:8000](http://127.0.0.1:8000)**
 
 ---
 
+### 🐳 Menjalankan Menggunakan Docker (Terisolasi & Paling Aman)
+
+Aplikasi telah dilengkapi konfigurasi **Docker & Docker Compose** lengkap (PHP 7.4-FPM, Nginx, dan MySQL 8.0) sehingga tidak akan terjadi bentrok versi PHP di mesin host / cloud server:
+
+```bash
+# 1. Jalankan container di background
+./docker-run.sh up
+
+# 2. Setup database, composer, dan seeder di dalam container
+./docker-run.sh setup
+
+# 3. Akses aplikasi
+# Buka di browser: http://localhost:8080 (atau http://IP_SERVER:8080)
+```
+
+Perintah praktis lainnya:
+- `./docker-run.sh artisan <command>` : Menjalankan artisan di container
+- `./docker-run.sh composer <command>` : Menjalankan composer di container
+- `./docker-run.sh down` : Mematikan container
+- `./docker-run.sh logs` : Melihat log container
+
+---
+
 ## 🔍 Fitur Utama
 
 1. **Proteksi Autentikasi**:
