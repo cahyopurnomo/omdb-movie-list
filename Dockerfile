@@ -1,18 +1,18 @@
-FROM php:7.4-fpm-bullseye
+FROM php:7.4-fpm-alpine
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
+# Install system dependencies & libraries required for PHP extensions
+RUN apk add --no-cache \
     git \
     curl \
     zip \
     unzip \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
-
-# Install official PHP extension installer
-COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
-
-# Install PHP extensions cleanly without manual library compilation errors
-RUN install-php-extensions pdo_mysql mbstring exif pcntl bcmath gd zip
+    libzip-dev \
+    libpng-dev \
+    libjpeg-turbo-dev \
+    freetype-dev \
+    oniguruma-dev \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install -j$(nproc) pdo_mysql bcmath exif pcntl zip gd
 
 # Install Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
