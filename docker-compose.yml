@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   # PHP 7.4 FPM Container (Native runtime for Laravel 5.8)
   app:
