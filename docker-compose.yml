@@ -8,9 +8,10 @@ services:
       dockerfile: Dockerfile
     container_name: omdb_app
     restart: unless-stopped
-    working_dir: /var/www/html/omdb-movie-list
+    working_dir: /var/www/html
     volumes:
-      - .:/var/www/html/omdb-movie-list
+      # Host Linux -> Container
+      - /var/www/html/omdb-movie-list:/var/www/html
     extra_hosts:
       # Memungkinkan container PHP mengakses MySQL yang berjalan di host server
       - "host.docker.internal:host-gateway"
@@ -25,8 +26,9 @@ services:
     ports:
       - "${APP_PORT:-8080}:80"
     volumes:
-      - .:/var/www/html/omdb-movie-list
-      - ./docker/nginx/conf.d:/etc/nginx/conf.d
+      # Host Linux -> Container
+      - /var/www/html/omdb-movie-list:/var/www/html
+      - /var/www/html/omdb-movie-list/docker/nginx/conf.d:/etc/nginx/conf.d
     depends_on:
       - app
     networks:
