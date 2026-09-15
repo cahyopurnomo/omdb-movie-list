@@ -11,4 +11,8 @@ return [
     'add_to_favorites' => 'Add to Favorites',
     'remove_from_favorites' => 'Remove from Favorites',
     'explore' => 'Explore Movies',
+    'confirm_remove_title' => 'Remove from Favorites?',
+    'confirm_remove_text' => 'Are you sure you want to remove this movie from your favorites?',
+    'confirm_yes' => 'Yes, Remove',
+    'confirm_cancel' => 'Cancel',
 ];

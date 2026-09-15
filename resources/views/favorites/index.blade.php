@@ -64,7 +64,7 @@
                         type="button" 
                         class="btn-fav-toggle active" 
                         title="{{ __('favorites.remove_from_favorites') }}"
-                        onclick="removeFavorite('{{ $favorite->imdb_id }}')"
+                        onclick="removeFavorite('{{ $favorite->imdb_id }}', '{{ addslashes($favorite->title) }}')"
                     >
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="#ef4444" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
@@ -104,8 +104,31 @@
 <script>
     const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-    async function removeFavorite(imdbId) {
-        if (!confirm("Are you sure you want to remove this movie from favorites?")) return;
+    async function removeFavorite(imdbId, movieTitle = '') {
+        const confirmText = movieTitle 
+            ? `{{ __('favorites.confirm_remove_text') }}`.replace('this movie', `"${movieTitle}"`).replace('film ini', `"${movieTitle}"`)
+            : `{{ __('favorites.confirm_remove_text') }}`;
+
+        const result = await Swal.fire({
+            title: `{{ __('favorites.confirm_remove_title') }}`,
+            text: confirmText,
+            icon: 'warning',
+            iconColor: '#f59e0b',
+            showCancelButton: true,
+            confirmButtonText: `{{ __('favorites.confirm_yes') }}`,
+            cancelButtonText: `{{ __('favorites.confirm_cancel') }}`,
+            reverseButtons: true,
+            focusCancel: true,
+            customClass: {
+                popup: 'cinescope-swal-popup',
+                title: 'cinescope-swal-title',
+                htmlContainer: 'cinescope-swal-html',
+                confirmButton: 'cinescope-swal-confirm',
+                cancelButton: 'cinescope-swal-cancel'
+            }
+        });
+
+        if (!result.isConfirmed) return;
 
         try {
             const response = await fetch(`{{ url('favorites') }}/${imdbId}`, {
