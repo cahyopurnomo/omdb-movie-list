@@ -1,0 +1,79 @@
+name: Auto Deploy to Cloud Server
+
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  deploy:
+    name: 🚀 Auto Deploy (Laravel on Cloud Server)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🌐 Execute Deployment via SSH on Cloud Server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: 154.26.130.216
+          username: developer
+          key: ${{ secrets.SSH_SERVER_KEY }}
+          port: 6288
+          script: |
+            # Tentukan direktori project di server
+            PROJECT_DIR="/var/www/html/omdb-movie-list"
+
+            echo "--- 1. Masuk ke direktori proyek ($PROJECT_DIR) ---"
+            if [ ! -d "$PROJECT_DIR" ]; then
+              echo "Direktori $PROJECT_DIR belum ada, membuat direktori & clone..."
+              mkdir -p "$PROJECT_DIR"
+              git clone https://github.com/cahyopurnomo/omdb-movie-list.git "$PROJECT_DIR"
+            fi
+            cd "$PROJECT_DIR"
+
+            echo "--- 2. Menarik kode terbaru dari branch main ---"
+            git fetch origin main
+            git reset --hard origin/main
+
+            echo "--- 3. Memastikan file .env tersedia ---"
+            if [ ! -f .env ] && [ -f .env.example ]; then
+              cp .env.example .env
+              echo "File .env dibuat dari .env.example. Jangan lupa sesuaikan kredensial di server!"
+            fi
+
+            echo "--- 4. Memperbarui dependensi Composer ---"
+            if command -v composer &> /dev/null; then
+              composer install --no-dev --optimize-autoloader --no-interaction --ignore-platform-reqs
+            fi
+
+            echo "--- 5. Generate Key jika belum ada ---"
+            if [ -f artisan ]; then
+              if ! grep -q "APP_KEY=base64:" .env 2>/dev/null; then
+                php artisan key:generate --force
+              fi
+
+              echo "--- 6. Menjalankan migrasi database ---"
+              php artisan migrate --force
+
+              echo "--- 7. Membersihkan & Mengoptimasi Cache Laravel ---"
+              php artisan config:clear
+              php artisan route:clear
+              php artisan view:clear
+              php artisan cache:clear
+
+              php artisan config:cache || true
+              php artisan route:cache || true
+              php artisan view:cache || true
+            fi
+
+            echo "--- 8. Mengatur permission folder storage & bootstrap/cache ---"
+            mkdir -p storage/framework/{sessions,views,cache} storage/logs bootstrap/cache
+            chmod +x artisan
+            chmod -R 775 storage bootstrap/cache
+            chmod -R g+s storage bootstrap/cache
+            chmod 640 .env 2>/dev/null || true
+
+            if command -v setfacl &> /dev/null; then
+              setfacl -R -m u:www-data:rwx,u:$USER:rwx storage bootstrap/cache 2>/dev/null || true
+              setfacl -R -d -m u:www-data:rwx,u:$USER:rwx storage bootstrap/cache 2>/dev/null || true
+            fi
+
+            echo "✅ DEPLOYMENT SUKSES! Aplikasi Laravel telah ter-update dengan kode terbaru."
