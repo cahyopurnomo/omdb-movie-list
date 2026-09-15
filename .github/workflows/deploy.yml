@@ -22,11 +22,6 @@ jobs:
             PROJECT_DIR="/var/www/html/omdb-movie-list"
 
             echo "--- 1. Masuk ke direktori proyek ($PROJECT_DIR) ---"
-            if [ ! -d "$PROJECT_DIR" ]; then
-              echo "Direktori $PROJECT_DIR belum ada, membuat direktori & clone..."
-              mkdir -p "$PROJECT_DIR"
-              git clone https://github.com/cahyopurnomo/omdb-movie-list.git "$PROJECT_DIR"
-            fi
             cd "$PROJECT_DIR"
 
             echo "--- 2. Menarik kode terbaru dari branch main ---"
