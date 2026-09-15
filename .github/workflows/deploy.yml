@@ -45,16 +45,4 @@ jobs:
               php artisan view:cache || true
             fi
 
-            echo "--- 8. Mengatur permission folder storage & bootstrap/cache ---"
-            mkdir -p storage/framework/{sessions,views,cache} storage/logs bootstrap/cache
-            chmod +x artisan
-            chmod -R 775 storage bootstrap/cache
-            chmod -R g+s storage bootstrap/cache
-            chmod 640 .env 2>/dev/null || true
-
-            if command -v setfacl &> /dev/null; then
-              setfacl -R -m u:www-data:rwx,u:$USER:rwx storage bootstrap/cache 2>/dev/null || true
-              setfacl -R -d -m u:www-data:rwx,u:$USER:rwx storage bootstrap/cache 2>/dev/null || true
-            fi
-
             echo "✅ DEPLOYMENT SUKSES! Aplikasi Laravel telah ter-update dengan kode terbaru."
