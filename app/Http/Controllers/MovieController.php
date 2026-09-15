@@ -33,24 +33,36 @@ class MovieController extends Controller
      */
     public function index(Request $request)
     {
-        $query = $request->input('search', 'avengers');
+        $query = $request->input('search', '');
         $type  = $request->input('type', '');
         $year  = $request->input('year', '');
-
-        $result = $this->omdb->searchMovies($query, $type ?: null, $year ?: null, 1);
 
         $favoriteIds = Auth::user()
             ->favorites()
             ->pluck('imdb_id')
             ->toArray();
 
+        // Only call OMDB API if there is a search query
+        if ($query !== '') {
+            $result = $this->omdb->searchMovies($query, $type ?: null, $year ?: null, 1);
+            return view('movies.index', [
+                'movies'       => $result['success'] ? $result['movies'] : [],
+                'totalResults' => $result['success'] ? $result['totalResults'] : 0,
+                'query'        => $query,
+                'type'         => $type,
+                'year'         => $year,
+                'error'        => !$result['success'] ? $result['message'] : null,
+                'favoriteIds'  => $favoriteIds,
+            ]);
+        }
+
         return view('movies.index', [
-            'movies'       => $result['success'] ? $result['movies'] : [],
-            'totalResults' => $result['success'] ? $result['totalResults'] : 0,
-            'query'        => $query,
+            'movies'       => [],
+            'totalResults' => 0,
+            'query'        => '',
             'type'         => $type,
             'year'         => $year,
-            'error'        => !$result['success'] ? $result['message'] : null,
+            'error'        => null,
             'favoriteIds'  => $favoriteIds,
         ]);
     }
@@ -63,7 +75,7 @@ class MovieController extends Controller
      */
     public function search(Request $request)
     {
-        $query = $request->input('search', 'avengers');
+        $query = $request->input('search', '');
         $type  = $request->input('type', '');
         $year  = $request->input('year', '');
         $page  = (int) $request->input('page', 1);
