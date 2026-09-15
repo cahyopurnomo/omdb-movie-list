@@ -86,6 +86,7 @@
     </header>
     @endauth
 
+    @auth
     <main class="main-content">
         @yield('content')
     </main>
@@ -93,6 +94,9 @@
     <footer class="footer">
         <p>{{ __('messages.footer_copyright') }}</p>
     </footer>
+    @else
+        @yield('content')
+    @endauth
 
     <!-- Toast notification container -->
     <div id="toast-container" class="toast-container"></div>
