@@ -46,7 +46,7 @@
                     placeholder="{{ __('movies.year_placeholder') }}" 
                     value="{{ $year }}" 
                     maxlength="4"
-                    style="width: 120px;"
+                    style="width: 160px;"
                 >
             </div>
 

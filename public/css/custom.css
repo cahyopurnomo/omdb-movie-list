@@ -327,8 +327,8 @@ a {
   border-radius: var(--radius-md);
   padding: 1rem;
   box-shadow: var(--shadow-card);
-  max-width: 1080px;
-  margin: 0 auto;
+  max-width: 100%;
+  margin: 0;
 }
 
 .search-form-grid {
