@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  # PHP 7.4 FPM Container (Native runtime for Laravel 5.8)
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: omdb_app
+    restart: unless-stopped
+    working_dir: /var/www/html
+    volumes:
+      - .:/var/www/html
+    networks:
+      - omdb_network
+
+  # Nginx Web Server Container
+  web:
+    image: nginx:alpine
+    container_name: omdb_web
+    restart: unless-stopped
+    ports:
+      - "${APP_PORT:-8080}:80"
+    volumes:
+      - .:/var/www/html
+      - ./docker/nginx/conf.d:/etc/nginx/conf.d
+    depends_on:
+      - app
+    networks:
+      - omdb_network
+
+  # MySQL Database Container
+  db:
+    image: mysql:8.0
+    container_name: omdb_db
+    restart: unless-stopped
+    ports:
+      - "${DB_PORT:-3307}:3306"
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE:-omdb_movie_lists}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-toor}
+    volumes:
+      - omdb_dbdata:/var/lib/mysql
+    networks:
+      - omdb_network
+
+networks:
+  omdb_network:
+    driver: bridge
+
+volumes:
+  omdb_dbdata:
+    driver: local
