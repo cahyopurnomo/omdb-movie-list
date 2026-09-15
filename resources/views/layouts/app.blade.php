@@ -14,7 +14,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
     <!-- Custom Cinema Stylesheet -->
-    <link rel="stylesheet" href="{{ asset('css/custom.css') }}?v={{ filemtime(public_path('css/custom.css')) }}">
+    @php $cssPath = public_path('css/custom.css'); @endphp
+    <link rel="stylesheet" href="{{ asset('css/custom.css') }}?v={{ file_exists($cssPath) ? filemtime($cssPath) : '1' }}">
     @stack('styles')
 </head>
 <body>
