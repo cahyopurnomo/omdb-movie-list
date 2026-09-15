@@ -16,12 +16,7 @@
             <h1 class="auth-title">{{ __('messages.login_title') }}</h1>
             <p class="auth-subtitle">{{ __('messages.login_subtitle') }}</p>
 
-            <div style="margin-top: 1rem;">
-                <div class="lang-switch">
-                    <a href="{{ route('locale.switch', 'en') }}" class="lang-btn {{ app()->getLocale() == 'en' ? 'active' : '' }}">EN</a>
-                    <a href="{{ route('locale.switch', 'id') }}" class="lang-btn {{ app()->getLocale() == 'id' ? 'active' : '' }}">ID</a>
-                </div>
-            </div>
+
         </div>
 
         @if ($errors->any())
@@ -96,9 +91,7 @@
                 <span>{{ __('messages.login_button') }}</span>
             </button>
 
-            <div class="demo-credentials-box">
-                {!! __('messages.demo_hint') !!}
-            </div>
+
         </form>
     </div>
 </div>
