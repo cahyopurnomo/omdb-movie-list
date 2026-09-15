@@ -52,6 +52,7 @@ class MovieController extends Controller
             'movies'       => $result['success'] ? $result['movies'] : [],
             'totalResults' => $result['success'] ? $result['totalResults'] : 0,
             'query'        => $query,
+            'apiQuery'     => $apiQuery,
             'type'         => $type,
             'year'         => $year,
             'error'        => !$result['success'] ? $result['message'] : null,

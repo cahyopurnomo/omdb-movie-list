@@ -184,7 +184,7 @@
     const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
     let currentPage = 1;
     let totalResults = {{ (int) $totalResults }};
-    let currentQuery = @json($query);
+    let currentQuery = @json($apiQuery ?? $query);
     let currentType = @json($type);
     let currentYear = @json($year);
     let isLoading = false;
