@@ -33,36 +33,28 @@ class MovieController extends Controller
      */
     public function index(Request $request)
     {
-        $query = $request->input('search', '');
-        $type  = $request->input('type', '');
-        $year  = $request->input('year', '');
+        $query   = $request->input('search', '');
+        $type    = $request->input('type', '');
+        $year    = $request->input('year', '');
+
+        // When no query provided, use a broad term internally so lazy load works.
+        // The search box will remain visually empty (query passed to view stays '').
+        $apiQuery = $query !== '' ? $query : 'the';
+
+        $result = $this->omdb->searchMovies($apiQuery, $type ?: null, $year ?: null, 1);
 
         $favoriteIds = Auth::user()
             ->favorites()
             ->pluck('imdb_id')
             ->toArray();
 
-        // Only call OMDB API if there is a search query
-        if ($query !== '') {
-            $result = $this->omdb->searchMovies($query, $type ?: null, $year ?: null, 1);
-            return view('movies.index', [
-                'movies'       => $result['success'] ? $result['movies'] : [],
-                'totalResults' => $result['success'] ? $result['totalResults'] : 0,
-                'query'        => $query,
-                'type'         => $type,
-                'year'         => $year,
-                'error'        => !$result['success'] ? $result['message'] : null,
-                'favoriteIds'  => $favoriteIds,
-            ]);
-        }
-
         return view('movies.index', [
-            'movies'       => [],
-            'totalResults' => 0,
-            'query'        => '',
+            'movies'       => $result['success'] ? $result['movies'] : [],
+            'totalResults' => $result['success'] ? $result['totalResults'] : 0,
+            'query'        => $query,
             'type'         => $type,
             'year'         => $year,
-            'error'        => null,
+            'error'        => !$result['success'] ? $result['message'] : null,
             'favoriteIds'  => $favoriteIds,
         ]);
     }
@@ -75,12 +67,15 @@ class MovieController extends Controller
      */
     public function search(Request $request)
     {
-        $query = $request->input('search', '');
-        $type  = $request->input('type', '');
-        $year  = $request->input('year', '');
-        $page  = (int) $request->input('page', 1);
+        $query  = $request->input('search', '');
+        $type   = $request->input('type', '');
+        $year   = $request->input('year', '');
+        $page   = (int) $request->input('page', 1);
 
-        $result = $this->omdb->searchMovies($query, $type ?: null, $year ?: null, $page);
+        // Fallback to broad query when search box is empty
+        $apiQuery = $query !== '' ? $query : 'the';
+
+        $result = $this->omdb->searchMovies($apiQuery, $type ?: null, $year ?: null, $page);
 
         $favoriteIds = Auth::user()
             ->favorites()
