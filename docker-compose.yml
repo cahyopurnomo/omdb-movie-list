@@ -11,6 +11,9 @@ services:
     working_dir: /var/www/html
     volumes:
       - .:/var/www/html
+    extra_hosts:
+      # Memungkinkan container PHP mengakses MySQL yang berjalan di host server
+      - "host.docker.internal:host-gateway"
     networks:
       - omdb_network
 
@@ -29,25 +32,6 @@ services:
     networks:
       - omdb_network
 
-  # MySQL Database Container
-  db:
-    image: mysql:8.0
-    container_name: omdb_db
-    restart: unless-stopped
-    ports:
-      - "${DB_PORT:-3307}:3306"
-    environment:
-      MYSQL_DATABASE: ${DB_DATABASE:-omdb_movie_lists}
-      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-toor}
-    volumes:
-      - omdb_dbdata:/var/lib/mysql
-    networks:
-      - omdb_network
-
 networks:
   omdb_network:
     driver: bridge
-
-volumes:
-  omdb_dbdata:
-    driver: local

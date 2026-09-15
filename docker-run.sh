@@ -8,7 +8,7 @@ COMMAND=$1
 
 case "$COMMAND" in
   up|start)
-    echo "🚀 Menjalankan container Docker (App, Web Nginx, MySQL)..."
+    echo "🚀 Menjalankan container Docker (App PHP 7.4 & Web Nginx)..."
     docker compose up -d --build
     echo "✅ Container berjalan!"
     echo "👉 Akses aplikasi di: http://localhost:8080"
