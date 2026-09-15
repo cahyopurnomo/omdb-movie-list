@@ -39,7 +39,7 @@ class MovieController extends Controller
 
         // When no query provided, use a broad term internally so lazy load works.
         // The search box will remain visually empty (query passed to view stays '').
-        $apiQuery = $query !== '' ? $query : 'the';
+        $apiQuery = $query !== '' ? $query : 'love';
 
         $result = $this->omdb->searchMovies($apiQuery, $type ?: null, $year ?: null, 1);
 
@@ -73,7 +73,7 @@ class MovieController extends Controller
         $page   = (int) $request->input('page', 1);
 
         // Fallback to broad query when search box is empty
-        $apiQuery = $query !== '' ? $query : 'the';
+        $apiQuery = $query !== '' ? $query : 'love';
 
         $result = $this->omdb->searchMovies($apiQuery, $type ?: null, $year ?: null, $page);
 
