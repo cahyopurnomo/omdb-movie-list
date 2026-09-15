@@ -28,26 +28,12 @@ jobs:
             git fetch origin main
             git reset --hard origin/main
 
-            echo "--- 3. Memastikan file .env tersedia ---"
-            if [ ! -f .env ] && [ -f .env.example ]; then
-              cp .env.example .env
-              echo "File .env dibuat dari .env.example. Jangan lupa sesuaikan kredensial di server!"
-            fi
-
             echo "--- 4. Memperbarui dependensi Composer ---"
             if command -v composer &> /dev/null; then
               composer install --no-dev --optimize-autoloader --no-interaction --ignore-platform-reqs
             fi
 
-            echo "--- 5. Generate Key jika belum ada ---"
             if [ -f artisan ]; then
-              if ! grep -q "APP_KEY=base64:" .env 2>/dev/null; then
-                php artisan key:generate --force
-              fi
-
-              echo "--- 6. Menjalankan migrasi database ---"
-              php artisan migrate --force
-
               echo "--- 7. Membersihkan & Mengoptimasi Cache Laravel ---"
               php artisan config:clear
               php artisan route:clear
